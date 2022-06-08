@@ -6,6 +6,10 @@
 This repo forks a set of most excellent [Helm](https://helm.sh) charts curated by [codecentric](https://www.codecentric.de).
 
 The fork exists for in-band modifications as necessary
+
+necessary
+- microk8s customizations
+
 ## Usage
 
 [Helm](https://helm.sh) must be installed and initialized to use the charts.
