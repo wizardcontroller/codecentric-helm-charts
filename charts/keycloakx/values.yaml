@@ -302,10 +302,10 @@ ingress:
             pathType: Prefix
 
     # Console TLS configuration
-    tls: []
-#      - hosts:
-#          - console.keycloak.example.com
-#        secretName: ""
+ #   tls: []
+ #   hosts:
+ #     - consolehost: console.keycloak.example.com
+ #       secretName: ""
 
 ## Network policy configuration
 networkPolicy:
