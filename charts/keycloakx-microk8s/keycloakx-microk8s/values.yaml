@@ -9,7 +9,7 @@ replicas: 1
 
 image:
   # The Keycloak image repository
-  repository: quay.io/keycloak/keycloak-x
+  repository: quay.io/keycloak/keycloak
   # Overrides the Keycloak image tag whose default is the chart appVersion
   tag: "latest"
   # The Keycloak image pull policy
@@ -259,7 +259,7 @@ ingress:
   # If `true`, an Ingress is created
   enabled: true
   # The name of the Ingress Class associated with this ingress
-  # microk8s customization 
+  # microk8s customization
   ingressClassName: "public"
   # The Service port targeted by the Ingress
   servicePort: http
