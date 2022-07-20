@@ -232,7 +232,7 @@ service:
   # Optional IP for the load balancer. Used for services of type LoadBalancer only
   loadBalancerIP: ""
   # The http Service port
-  httpPort: 80
+  httpPort: 8080
   # The HTTP Service node port if type is NodePort
   httpNodePort: null
   # The HTTPS Service port
@@ -369,9 +369,6 @@ dbchecker:
       memory: "32Mi"
 
 database:
-  # don't create secret for db password. Instead use existing k8s secret
-  # existingSecret: "my-existent-dbpass-secret"
-  existingSecret: ""
   # E.g. dev-file, dev-mem, mariadb, mssql, mysql, oracle or postgres
   vendor:
   hostname:
@@ -389,7 +386,6 @@ proxy:
   mode: edge
 
 metrics:
-  enabled: true
   enabled: true
 
 http:
