@@ -78,6 +78,7 @@ The following table lists the configurable parameters of the Keycloak-X chart an
 | `serviceAccount.annotations`                 | Additional annotations for the ServiceAccount                                                                                                                                                                                                                                     | `{}`                                                                                                                                  |
 | `serviceAccount.labels`                      | Additional labels for the ServiceAccount                                                                                                                                                                                                                                          | `{}`                                                                                                                                  |
 | `serviceAccount.imagePullSecrets`            | Image pull secrets that are attached to the ServiceAccount                                                                                                                                                                                                                        | `[]`                                                                                                                                  |
+| `serviceAccount.automountServiceAccountToken`            | Automount API credentials for the Service Account                                                                                                                                                                                                                        | `true`                                                                                                                                  |
 | `rbac.create`                                | Specifies whether RBAC resources are to be created                                                                                                                                                                                                                                | `false`
 | `rbac.rules`                                 | Custom RBAC rules, e. g. for KUBE_PING                                                                                                                                                                                                                                            | `[]`
 | `podSecurityContext`                         | SecurityContext for the entire Pod. Every container running in the Pod will inherit this SecurityContext. This might be relevant when other components of the environment inject additional containers into running Pods (service meshes are the most prominent example for this) | `{"fsGroup":1000}`                                                                                                                    |
@@ -166,12 +167,14 @@ The following table lists the configurable parameters of the Keycloak-X chart an
 | `database.port`                              | Database Port                                                                                                                                                                                                                                                                     | unset                                                                                                                                 |
 | `database.username`                          | Database User                                                                                                                                                                                                                                                                     | unset                                                                                                                                 |
 | `database.password`                          | Database Password                                                                                                                                                                                                                                                                 | unset                                                                                                                                 |
+| `database.existingSecret`                    | Existing Secret containing database password (expects key `password`) | unset                                                                                                                                 |
 | `database.database`                          | Database                                                                                                                                                                                                                                                                          | unset                                                                                                                                 |
 | `cache.stack`                                | Cache / Cluster Discovery, use `custom` to disable automatic configruation.                                                                                                                                                                                                       | `default`                                                                                                                             |
 | `proxy.enabled`                              | If `true`, the `KC_PROXY` env variable will be set to the configured mode                                                                                                                                                                                                         | `true`                                                                                                                                |
 | `proxy.mode`                                 | The configured proxy mode                                                                                                                                                                                                                                                         | `edge`                                                                                                                                |
 | `http.relativePath`                          | The relative http path (context-path)                                                                                                                                                                                                                                             | `/auth`                                                                                                                               |
 | `metrics.enabled`                            | If `true` then the metrics endpoint is exposed                                                                                                                                                                                                                                    | `true`                                                                                                                                |
+| `health.enabled`                            | If `true` then the health endpoint is exposed                                                                                                                                                                                                                                    | `true`                                                                                                                                |
 | `serviceMonitor.enabled`                     | If `true`, a ServiceMonitor resource for the prometheus-operator is created                                                                                                                                                                                                       | `false`                                                                                                                               |
 | `serviceMonitor.namespace`                   | Optionally sets a target namespace in which to deploy the ServiceMonitor resource                                                                                                                                                                                                 | `""`                                                                                                                                  |
 | `serviceMonitor.namespaceSelector`           | Optionally sets a namespace selector for the ServiceMonitor                                                                                                                                                                                                                       | `{}`                                                                                                                                  |
@@ -296,8 +299,7 @@ database:
 
 ##### Using an Existing Secret
 
-The following examples uses a PostgreSQL database with a secret.
-Username and password are mounted as files.
+The following examples uses a PostgreSQL database with an existing secret.
 
 ```yaml
 dbchecker:
@@ -308,22 +310,8 @@ database:
   hostname: mypostgres
   port: 5432
   database: mydb
-
-extraEnv: |
-  - name: KC_DB_USERNAME_FILE
-    value: /secrets/db-creds/user
-  - name: KC_DB_PASSWORD_FILE
-    value: /secrets/db-creds/password
-
-extraVolumeMounts: |
-  - name: db-creds
-    mountPath: /secrets/db-creds
-    readOnly: true
-
-extraVolumes: |
-  - name: db-creds
-    secret:
-      secretName: keycloak-db-creds
+  username: db-user
+  existingSecret: byo-db-creds # Password is retrieved via .password
 ```
 
 ### Creating a Keycloak Admin User
@@ -571,3 +559,13 @@ ingress:
 ## Upgrading
 
 Notes for upgrading from previous Keycloak chart versions.
+
+### From chart < 18.0.0
+
+* Keycloak is updated to 18.0.0
+* Added new `health.enabled` option.
+
+Keycloak 18.0.0 allows to enable the health endpoint independently of the metrics endpoint via the `health-enabled` setting. 
+We reflect that via the new config option `health.enabled`.
+
+Please read the additional notes about [Migrating to 18.0.0](https://www.keycloak.org/docs/latest/upgrading/index.html#migrating-to-18-0-0) in the Keycloak documentation.
